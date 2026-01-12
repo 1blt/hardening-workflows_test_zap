@@ -37,11 +37,10 @@ jobs:
       allow_failure: true
     secrets: inherit
 
-  # Basic ZAP test - Docker Mode
+  # Basic ZAP test - Docker Mode (runs in parallel)
   test-zap-docker:
     name: ZAP Docker Mode - Juice Shop
     if: inputs.test_suite == 'all' || inputs.test_suite == 'basic'
-    needs: test-zap-url
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
@@ -53,17 +52,16 @@ jobs:
       allow_failure: true
     secrets: inherit
 
-  # Threshold test - should allow failures
+  # Threshold test - using different URL to avoid collision (runs in parallel)
   test-threshold:
     name: ZAP Threshold Test
     if: inputs.test_suite == 'all' || inputs.test_suite == 'basic'
-    needs: test-zap-docker
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
       zap_scan_mode: 'url'
       zap_scan_type: 'baseline'
-      zap_target_urls: 'http://demo.testfire.net'
+      zap_target_urls: 'http://testphp.vulnweb.com'
       allow_failure: false
       severity_threshold: 'high'
     secrets: inherit
