@@ -6,6 +6,14 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  actions: read
+  checks: write
+  pull-requests: write
+  security-events: write
+  id-token: write
+  contents: read
+
 jobs:
   test-zap-compose:
     name: ZAP Compose Mode - Multiple Services

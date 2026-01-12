@@ -6,6 +6,14 @@ on:
     branches: [main]
   pull_request:
 
+permissions:
+  actions: read
+  checks: write
+  pull-requests: write
+  security-events: write
+  id-token: write
+  contents: read
+
 jobs:
   test-threshold-none:
     name: Threshold None (Should Pass)
@@ -17,6 +25,7 @@ jobs:
       zap_app_image_ref: 'bkimminich/juice-shop:latest'
       zap_app_ports: '3000:3000'
       zap_target_urls: 'http://localhost:3000'
+      zap_failure_threshold: 'none'
     secrets: inherit
 
   test-threshold-informational:
@@ -30,6 +39,7 @@ jobs:
       zap_app_image_ref: 'bkimminich/juice-shop:latest'
       zap_app_ports: '3000:3000'
       zap_target_urls: 'http://localhost:3000'
+      zap_failure_threshold: 'informational'
     secrets: inherit
 
   test-threshold-low:
@@ -43,6 +53,7 @@ jobs:
       zap_app_image_ref: 'bkimminich/juice-shop:latest'
       zap_app_ports: '3000:3000'
       zap_target_urls: 'http://localhost:3000'
+      zap_failure_threshold: 'low'
     secrets: inherit
 
   test-threshold-medium:
@@ -56,6 +67,7 @@ jobs:
       zap_app_image_ref: 'bkimminich/juice-shop:latest'
       zap_app_ports: '3000:3000'
       zap_target_urls: 'http://localhost:3000'
+      zap_failure_threshold: 'medium'
     secrets: inherit
 
   test-threshold-high:
@@ -69,4 +81,5 @@ jobs:
       zap_app_image_ref: 'bkimminich/juice-shop:latest'
       zap_app_ports: '3000:3000'
       zap_target_urls: 'http://localhost:3000'
+      zap_failure_threshold: 'high'
     secrets: inherit
