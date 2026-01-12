@@ -17,7 +17,7 @@ permissions:
 jobs:
   test-zap-compose:
     name: ZAP Compose Mode - Multiple Services
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
       zap_scan_mode: 'compose'

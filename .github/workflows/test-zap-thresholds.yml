@@ -17,7 +17,7 @@ permissions:
 jobs:
   test-threshold-none:
     name: Threshold None (Should Pass)
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
@@ -30,7 +30,7 @@ jobs:
 
   test-threshold-informational:
     name: Threshold Informational (Should Fail)
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     continue-on-error: true
     with:
       scanners: 'zap'
@@ -44,7 +44,7 @@ jobs:
 
   test-threshold-low:
     name: Threshold Low (Should Fail)
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     continue-on-error: true
     with:
       scanners: 'zap'
@@ -58,7 +58,7 @@ jobs:
 
   test-threshold-medium:
     name: Threshold Medium (Should Fail)
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     continue-on-error: true
     with:
       scanners: 'zap'
@@ -72,7 +72,7 @@ jobs:
 
   test-threshold-high:
     name: Threshold High (May Pass or Fail)
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     continue-on-error: true
     with:
       scanners: 'zap'
