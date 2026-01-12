@@ -168,8 +168,8 @@ jobs:
     name: Threshold Informational (Should Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-none
-    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     continue-on-error: true
+    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
@@ -184,8 +184,8 @@ jobs:
     name: Threshold Low (Should Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-informational
-    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     continue-on-error: true
+    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
@@ -200,8 +200,8 @@ jobs:
     name: Threshold Medium (Should Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-low
-    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     continue-on-error: true
+    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
@@ -216,8 +216,8 @@ jobs:
     name: Threshold High (May Pass or Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-medium
-    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     continue-on-error: true
+    uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
