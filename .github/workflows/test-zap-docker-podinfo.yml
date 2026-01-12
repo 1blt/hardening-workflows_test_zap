@@ -1,0 +1,21 @@
+name: Test ZAP - Docker Mode (Podinfo - Clean App)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-zap-podinfo-baseline:
+    name: ZAP Baseline - Podinfo (Clean App)
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'ghcr.io/stefanprodan/podinfo:latest'
+      zap_docker_ports: '9898:9898'
+      zap_target_url: 'http://localhost:9898'
+      zap_fail_threshold: 'high'
+    secrets: inherit

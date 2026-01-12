@@ -1,0 +1,37 @@
+name: Test ZAP - Integration with Other Scanners
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-zap-opt-in:
+    name: ZAP is Opt-In (not in 'all')
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'all'
+    secrets: inherit
+
+  test-zap-with-other-scanners:
+    name: ZAP + Other Scanners
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'trivy,semgrep,zap'
+      zap_scan_mode: 'url'
+      zap_scan_type: 'baseline'
+      zap_target_url: 'http://demo.testfire.net'
+      zap_fail_threshold: 'none'
+    secrets: inherit
+
+  test-zap-only:
+    name: ZAP Only
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'url'
+      zap_scan_type: 'baseline'
+      zap_target_url: 'http://demo.testfire.net'
+      zap_fail_threshold: 'none'
+    secrets: inherit

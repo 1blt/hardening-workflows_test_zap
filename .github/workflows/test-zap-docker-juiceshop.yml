@@ -1,0 +1,48 @@
+name: Test ZAP - Docker Mode (Juice Shop)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-zap-baseline:
+    name: ZAP Baseline Scan - Juice Shop
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'none'
+    secrets: inherit
+
+  test-zap-full:
+    name: ZAP Full Scan - Juice Shop
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'full'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'high'
+    secrets: inherit
+
+  test-zap-api:
+    name: ZAP API Scan - Juice Shop
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'api'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_api_spec_url: 'http://localhost:3000/api-docs'
+      zap_fail_threshold: 'medium'
+    secrets: inherit

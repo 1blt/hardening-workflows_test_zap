@@ -1,0 +1,77 @@
+name: Test ZAP - Failure Thresholds
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-threshold-none:
+    name: Threshold None (Should Pass)
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'none'
+    secrets: inherit
+
+  test-threshold-informational:
+    name: Threshold Informational (Should Fail)
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    continue-on-error: true
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'informational'
+    secrets: inherit
+
+  test-threshold-low:
+    name: Threshold Low (Should Fail)
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    continue-on-error: true
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'low'
+    secrets: inherit
+
+  test-threshold-medium:
+    name: Threshold Medium (Should Fail)
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    continue-on-error: true
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'medium'
+    secrets: inherit
+
+  test-threshold-high:
+    name: Threshold High (May Pass or Fail)
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    continue-on-error: true
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'bkimminich/juice-shop:latest'
+      zap_docker_ports: '3000:3000'
+      zap_target_url: 'http://localhost:3000'
+      zap_fail_threshold: 'high'
+    secrets: inherit

@@ -1,0 +1,31 @@
+# ZAP Reports
+*.html
+*.json
+*.md
+*.xml
+!README.md
+!docs/*.md
+!TESTING-SUMMARY.md
+!SETUP-INSTRUCTIONS.md
+
+# Test Results
+test-results/
+reports/
+
+# OS Files
+.DS_Store
+Thumbs.db
+
+# IDE
+.idea/
+.vscode/
+*.swp
+*.swo
+*~
+
+# Logs
+*.log
+
+# Temporary Files
+tmp/
+temp/

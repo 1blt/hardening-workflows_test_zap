@@ -1,0 +1,72 @@
+name: Run All ZAP Tests
+
+on:
+  workflow_dispatch:
+    inputs:
+      test_suite:
+        description: 'Test suite to run'
+        required: true
+        type: choice
+        options:
+          - all
+          - scan-modes
+          - scan-types
+          - thresholds
+          - integration
+        default: 'all'
+  schedule:
+    # Run daily at 2 AM UTC
+    - cron: '0 2 * * *'
+
+jobs:
+  # Scan Mode Tests
+  test-url-mode:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'scan-modes'
+    uses: ./.github/workflows/test-zap-url-mode.yml
+
+  test-docker-juiceshop:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'scan-modes'
+    uses: ./.github/workflows/test-zap-docker-juiceshop.yml
+
+  test-docker-dvwa:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'scan-modes'
+    uses: ./.github/workflows/test-zap-docker-dvwa.yml
+
+  test-docker-podinfo:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'scan-modes'
+    uses: ./.github/workflows/test-zap-docker-podinfo.yml
+
+  test-compose-mode:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'scan-modes'
+    uses: ./.github/workflows/test-zap-compose-mode.yml
+
+  # Threshold Tests
+  test-thresholds:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
+    uses: ./.github/workflows/test-zap-thresholds.yml
+
+  # Integration Tests
+  test-integration:
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'integration'
+    uses: ./.github/workflows/test-zap-integration.yml
+
+  # Summary
+  test-summary:
+    name: Test Summary
+    runs-on: ubuntu-latest
+    needs: [test-url-mode, test-docker-juiceshop, test-docker-dvwa, test-docker-podinfo, test-compose-mode, test-thresholds, test-integration]
+    if: always()
+    steps:
+      - name: Check Test Results
+        run: |
+          echo "## Test Suite Results" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          echo "| Test | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| URL Mode | ${{ needs.test-url-mode.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker - Juice Shop | ${{ needs.test-docker-juiceshop.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker - DVWA | ${{ needs.test-docker-dvwa.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Docker - Podinfo | ${{ needs.test-docker-podinfo.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Compose Mode | ${{ needs.test-compose-mode.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Thresholds | ${{ needs.test-thresholds.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Integration | ${{ needs.test-integration.result }} |" >> $GITHUB_STEP_SUMMARY

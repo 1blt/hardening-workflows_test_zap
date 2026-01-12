@@ -1,0 +1,34 @@
+name: Test ZAP - Docker Mode (DVWA)
+
+on:
+  workflow_dispatch:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test-zap-dvwa-baseline:
+    name: ZAP Baseline - DVWA
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'baseline'
+      zap_docker_image: 'vulnerables/web-dvwa:latest'
+      zap_docker_ports: '80:80'
+      zap_target_url: 'http://localhost:80'
+      zap_fail_threshold: 'none'
+    secrets: inherit
+
+  test-zap-dvwa-full:
+    name: ZAP Full Scan - DVWA
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@79dbc2998a0c6f83e77d44176ea38fc67bd15fe0
+    with:
+      scanners: 'zap'
+      zap_scan_mode: 'docker-run'
+      zap_scan_type: 'full'
+      zap_docker_image: 'vulnerables/web-dvwa:latest'
+      zap_docker_ports: '80:80'
+      zap_target_url: 'http://localhost:80'
+      zap_fail_threshold: 'high'
+    secrets: inherit
