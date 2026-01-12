@@ -35,10 +35,7 @@ jobs:
   # Test HRL branch (expected to fail - demonstrates Issue #1)
   test-hrl-baseline:
     name: HRL Branch - URL Mode
-    if: |
-      (inputs.test_suite == 'all' || inputs.test_suite == 'basic') &&
-      (github.event_name == 'schedule' || inputs.zap_source == 'original')
-    continue-on-error: true
+    if: (inputs.test_suite == 'all' || inputs.test_suite == 'basic') && (github.event_name == 'schedule' || inputs.zap_source == 'original')
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
@@ -51,9 +48,7 @@ jobs:
   # Test fork with fixes - URL Mode (runs in parallel)
   test-fork-url:
     name: Fork with Fixes - URL Mode
-    if: |
-      (inputs.test_suite == 'all' || inputs.test_suite == 'basic') &&
-      (github.event_name != 'schedule' && inputs.zap_source == 'fork')
+    if: (inputs.test_suite == 'all' || inputs.test_suite == 'basic') && (github.event_name != 'schedule' && inputs.zap_source == 'fork')
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
@@ -66,9 +61,7 @@ jobs:
   # Test fork with fixes - Docker Mode (runs in parallel)
   test-fork-docker:
     name: Fork with Fixes - Docker Mode
-    if: |
-      (inputs.test_suite == 'all' || inputs.test_suite == 'basic') &&
-      (github.event_name != 'schedule' && inputs.zap_source == 'fork')
+    if: (inputs.test_suite == 'all' || inputs.test_suite == 'basic') && (github.event_name != 'schedule' && inputs.zap_source == 'fork')
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
