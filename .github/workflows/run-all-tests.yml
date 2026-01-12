@@ -168,7 +168,6 @@ jobs:
     name: Threshold Informational (Should Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-none
-    continue-on-error: true
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
@@ -179,12 +178,12 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'informational'
     secrets: inherit
+    continue-on-error: true
 
   test-threshold-low:
     name: Threshold Low (Should Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-informational
-    continue-on-error: true
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
@@ -195,12 +194,12 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'low'
     secrets: inherit
+    continue-on-error: true
 
   test-threshold-medium:
     name: Threshold Medium (Should Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-low
-    continue-on-error: true
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
@@ -211,12 +210,12 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'medium'
     secrets: inherit
+    continue-on-error: true
 
   test-threshold-high:
     name: Threshold High (May Pass or Fail)
     if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
     needs: test-threshold-medium
-    continue-on-error: true
     uses: 1blt/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner-fixes-250112
     with:
       scanners: 'zap'
@@ -227,6 +226,7 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'high'
     secrets: inherit
+    continue-on-error: true
 
   # Integration Tests
   test-zap-opt-in:
