@@ -21,8 +21,7 @@ jobs:
       scanners: 'trivy,semgrep,zap'
       zap_scan_mode: 'url'
       zap_scan_type: 'baseline'
-      zap_target_url: 'http://demo.testfire.net'
-      zap_fail_threshold: 'none'
+      zap_target_urls: 'http://demo.testfire.net'
     secrets: inherit
 
   test-zap-only:
@@ -32,6 +31,5 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'url'
       zap_scan_type: 'baseline'
-      zap_target_url: 'http://demo.testfire.net'
-      zap_fail_threshold: 'none'
+      zap_target_urls: 'http://demo.testfire.net'
     secrets: inherit

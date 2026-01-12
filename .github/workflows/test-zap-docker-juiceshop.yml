@@ -14,10 +14,9 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
       zap_scan_type: 'baseline'
-      zap_docker_image: 'bkimminich/juice-shop:latest'
-      zap_docker_ports: '3000:3000'
-      zap_target_url: 'http://localhost:3000'
-      zap_fail_threshold: 'none'
+      zap_app_image_ref: 'bkimminich/juice-shop:latest'
+      zap_app_ports: '3000:3000'
+      zap_target_urls: 'http://localhost:3000'
     secrets: inherit
 
   test-zap-full:
@@ -27,10 +26,9 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
       zap_scan_type: 'full'
-      zap_docker_image: 'bkimminich/juice-shop:latest'
-      zap_docker_ports: '3000:3000'
-      zap_target_url: 'http://localhost:3000'
-      zap_fail_threshold: 'high'
+      zap_app_image_ref: 'bkimminich/juice-shop:latest'
+      zap_app_ports: '3000:3000'
+      zap_target_urls: 'http://localhost:3000'
     secrets: inherit
 
   test-zap-api:
@@ -40,9 +38,8 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
       zap_scan_type: 'api'
-      zap_docker_image: 'bkimminich/juice-shop:latest'
-      zap_docker_ports: '3000:3000'
-      zap_target_url: 'http://localhost:3000'
-      zap_api_spec_url: 'http://localhost:3000/api-docs'
-      zap_fail_threshold: 'medium'
+      zap_app_image_ref: 'bkimminich/juice-shop:latest'
+      zap_app_ports: '3000:3000'
+      zap_target_urls: 'http://localhost:3000'
+      zap_api_spec: 'http://localhost:3000/api-docs'
     secrets: inherit

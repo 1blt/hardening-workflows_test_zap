@@ -15,6 +15,5 @@ jobs:
       zap_scan_mode: 'compose'
       zap_scan_type: 'baseline'
       zap_compose_file: 'docker-compose.yml'
-      zap_target_url: 'http://localhost:3000'
-      zap_fail_threshold: 'none'
+      zap_target_urls: 'http://localhost:3000'
     secrets: inherit

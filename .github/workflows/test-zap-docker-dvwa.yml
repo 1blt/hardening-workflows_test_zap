@@ -14,10 +14,9 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
       zap_scan_type: 'baseline'
-      zap_docker_image: 'vulnerables/web-dvwa:latest'
-      zap_docker_ports: '80:80'
-      zap_target_url: 'http://localhost:80'
-      zap_fail_threshold: 'none'
+      zap_app_image_ref: 'vulnerables/web-dvwa:latest'
+      zap_app_ports: '80:80'
+      zap_target_urls: 'http://localhost:80'
     secrets: inherit
 
   test-zap-dvwa-full:
@@ -27,8 +26,7 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
       zap_scan_type: 'full'
-      zap_docker_image: 'vulnerables/web-dvwa:latest'
-      zap_docker_ports: '80:80'
-      zap_target_url: 'http://localhost:80'
-      zap_fail_threshold: 'high'
+      zap_app_image_ref: 'vulnerables/web-dvwa:latest'
+      zap_app_ports: '80:80'
+      zap_target_urls: 'http://localhost:80'
     secrets: inherit

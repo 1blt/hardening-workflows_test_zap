@@ -14,8 +14,7 @@ jobs:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
       zap_scan_type: 'baseline'
-      zap_docker_image: 'ghcr.io/stefanprodan/podinfo:latest'
-      zap_docker_ports: '9898:9898'
-      zap_target_url: 'http://localhost:9898'
-      zap_fail_threshold: 'high'
+      zap_app_image_ref: 'ghcr.io/stefanprodan/podinfo:latest'
+      zap_app_ports: '9898:9898'
+      zap_target_urls: 'http://localhost:9898'
     secrets: inherit
