@@ -178,7 +178,6 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'informational'
     secrets: inherit
-    continue-on-error: true
 
   test-threshold-low:
     name: Threshold Low (Should Fail)
@@ -194,7 +193,6 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'low'
     secrets: inherit
-    continue-on-error: true
 
   test-threshold-medium:
     name: Threshold Medium (Should Fail)
@@ -210,7 +208,6 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'medium'
     secrets: inherit
-    continue-on-error: true
 
   test-threshold-high:
     name: Threshold High (May Pass or Fail)
@@ -226,7 +223,6 @@ jobs:
       zap_target_urls: 'http://localhost:3000'
       zap_failure_threshold: 'high'
     secrets: inherit
-    continue-on-error: true
 
   # Integration Tests
   test-zap-opt-in:
