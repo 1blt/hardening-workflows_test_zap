@@ -2,6 +2,29 @@ name: Test ZAP - Integration with Other Scanners
 
 on:
   workflow_dispatch:
+    inputs:
+      workflow_repository:
+        description: 'Repository (owner/repo) of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'huntridge-labs/hardening-workflows'
+      workflow_ref:
+        description: 'Branch/tag of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'feat/zap-scanner'
+  workflow_call:
+    inputs:
+      workflow_repository:
+        description: 'Repository (owner/repo) of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'huntridge-labs/hardening-workflows'
+      workflow_ref:
+        description: 'Branch/tag of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'feat/zap-scanner'
   push:
     branches: [main]
   pull_request:
@@ -17,7 +40,7 @@ permissions:
 jobs:
   test-zap-opt-in:
     name: ZAP is Opt-In (not in 'all')
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     with:
       scanners: 'all'
     secrets: inherit
@@ -25,7 +48,7 @@ jobs:
   test-zap-with-other-scanners:
     name: ZAP + Other Scanners
     needs: test-zap-opt-in
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     with:
       scanners: 'trivy,semgrep,zap'
       zap_scan_mode: 'url'
@@ -36,7 +59,7 @@ jobs:
   test-zap-only:
     name: ZAP Only
     needs: test-zap-with-other-scanners
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     with:
       scanners: 'zap'
       zap_scan_mode: 'url'

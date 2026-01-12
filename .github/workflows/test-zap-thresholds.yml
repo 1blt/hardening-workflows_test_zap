@@ -2,6 +2,29 @@ name: Test ZAP - Failure Thresholds
 
 on:
   workflow_dispatch:
+    inputs:
+      workflow_repository:
+        description: 'Repository (owner/repo) of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'huntridge-labs/hardening-workflows'
+      workflow_ref:
+        description: 'Branch/tag of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'feat/zap-scanner'
+  workflow_call:
+    inputs:
+      workflow_repository:
+        description: 'Repository (owner/repo) of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'huntridge-labs/hardening-workflows'
+      workflow_ref:
+        description: 'Branch/tag of hardening-workflows to test'
+        required: false
+        type: string
+        default: 'feat/zap-scanner'
   push:
     branches: [main]
   pull_request:
@@ -17,7 +40,7 @@ permissions:
 jobs:
   test-threshold-none:
     name: Threshold None (Should Pass)
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     with:
       scanners: 'zap'
       zap_scan_mode: 'docker-run'
@@ -31,7 +54,7 @@ jobs:
   test-threshold-informational:
     name: Threshold Informational (Should Fail)
     needs: test-threshold-none
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     continue-on-error: true
     with:
       scanners: 'zap'
@@ -46,7 +69,7 @@ jobs:
   test-threshold-low:
     name: Threshold Low (Should Fail)
     needs: test-threshold-informational
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     continue-on-error: true
     with:
       scanners: 'zap'
@@ -61,7 +84,7 @@ jobs:
   test-threshold-medium:
     name: Threshold Medium (Should Fail)
     needs: test-threshold-low
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     continue-on-error: true
     with:
       scanners: 'zap'
@@ -76,7 +99,7 @@ jobs:
   test-threshold-high:
     name: Threshold High (May Pass or Fail)
     needs: test-threshold-medium
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: ${{ inputs.workflow_repository || 'huntridge-labs/hardening-workflows' }}/.github/workflows/reusable-security-hardening.yml@${{ inputs.workflow_ref || 'feat/zap-scanner' }}
     continue-on-error: true
     with:
       scanners: 'zap'
