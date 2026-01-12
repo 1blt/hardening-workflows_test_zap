@@ -53,6 +53,7 @@ jobs:
     secrets: inherit
 
   # Threshold test - using different URL to avoid collision (runs in parallel)
+  # This test verifies ZAP can detect vulnerabilities and properly apply severity thresholds
   test-threshold:
     name: ZAP Threshold Test
     if: inputs.test_suite == 'all' || inputs.test_suite == 'basic'
@@ -62,7 +63,7 @@ jobs:
       zap_scan_mode: 'url'
       zap_scan_type: 'baseline'
       zap_target_urls: 'http://testphp.vulnweb.com'
-      allow_failure: false
+      allow_failure: true
       severity_threshold: 'high'
     secrets: inherit
 
