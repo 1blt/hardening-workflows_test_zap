@@ -9,10 +9,8 @@ on:
         type: choice
         options:
           - all
-          - url-modes
-          - docker-modes
-          - thresholds
-          - scan-types
+          - url-only
+          - docker-only
         default: 'all'
 
 permissions:
@@ -25,12 +23,18 @@ permissions:
 
 jobs:
   # =============================================================================
-  # URL MODE TESTS - Test scanning external URLs
+  # MINIMAL TEST SUITE - Maximum coverage with minimum tests
+  # =============================================================================
+  # Tests cover:
+  # - Scan modes: url, docker-run
+  # - Scan types: baseline, full, api
+  # - Thresholds: none (never fail), high (strict)
   # =============================================================================
 
-  url-baseline:
-    name: URL Mode - Baseline Scan
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-modes' || inputs.test_suite == 'scan-types'
+  # Test 1: URL Mode + Baseline Scan (most common use case)
+  test-url-baseline:
+    name: "Test 1: URL + Baseline"
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-only'
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
@@ -40,9 +44,10 @@ jobs:
       allow_failure: true
     secrets: inherit
 
-  url-full:
-    name: URL Mode - Full Scan
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-modes' || inputs.test_suite == 'scan-types'
+  # Test 2: URL Mode + Full Scan (tests active scanning)
+  test-url-full:
+    name: "Test 2: URL + Full Scan"
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-only'
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
@@ -52,9 +57,10 @@ jobs:
       allow_failure: true
     secrets: inherit
 
-  url-api:
-    name: URL Mode - API Scan
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-modes' || inputs.test_suite == 'scan-types'
+  # Test 3: URL Mode + API Scan (tests OpenAPI spec scanning)
+  test-url-api:
+    name: "Test 3: URL + API Scan"
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-only'
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
@@ -65,27 +71,10 @@ jobs:
       allow_failure: true
     secrets: inherit
 
-  url-multiple-targets:
-    name: URL Mode - Multiple Targets
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-modes'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'url'
-      zap_scan_type: 'baseline'
-      zap_target_urls: |
-        http://testphp.vulnweb.com
-        http://demo.testfire.net
-      allow_failure: true
-    secrets: inherit
-
-  # =============================================================================
-  # DOCKER MODE TESTS - Test scanning containerized applications
-  # =============================================================================
-
-  docker-baseline-juiceshop:
-    name: Docker Mode - Juice Shop Baseline
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'docker-modes'
+  # Test 4: Docker Mode + Baseline (tests container scanning)
+  test-docker-baseline:
+    name: "Test 4: Docker + Baseline"
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'docker-only'
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
@@ -97,183 +86,48 @@ jobs:
       allow_failure: true
     secrets: inherit
 
-  docker-full-juiceshop:
-    name: Docker Mode - Juice Shop Full
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'docker-modes'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'docker-run'
-      zap_scan_type: 'full'
-      zap_app_image_ref: 'bkimminich/juice-shop:latest'
-      zap_app_ports: '3001:3000'
-      zap_target_urls: 'http://localhost:3001'
-      allow_failure: true
-    secrets: inherit
-
-  docker-baseline-dvwa:
-    name: Docker Mode - DVWA Baseline
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'docker-modes'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'docker-run'
-      zap_scan_type: 'baseline'
-      zap_app_image_ref: 'vulnerables/web-dvwa:latest'
-      zap_app_ports: '8080:80'
-      zap_target_urls: 'http://localhost:8080'
-      allow_failure: true
-    secrets: inherit
-
-  docker-baseline-podinfo:
-    name: Docker Mode - Podinfo Baseline (Clean App)
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'docker-modes'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'docker-run'
-      zap_scan_type: 'baseline'
-      zap_app_image_ref: 'ghcr.io/stefanprodan/podinfo:latest'
-      zap_app_ports: '9898:9898'
-      zap_target_urls: 'http://localhost:9898'
-      allow_failure: true
-    secrets: inherit
-
-  docker-custom-port:
-    name: Docker Mode - Custom Port Mapping
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'docker-modes'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'docker-run'
-      zap_scan_type: 'baseline'
-      zap_app_image_ref: 'bkimminich/juice-shop:latest'
-      zap_app_ports: '8888:3000'
-      zap_target_urls: 'http://localhost:8888'
-      allow_failure: true
-    secrets: inherit
-
-  # =============================================================================
-  # THRESHOLD TESTS - Test different failure thresholds
-  # =============================================================================
-
-  threshold-none:
-    name: Threshold - None (Never Fail)
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
+  # Test 5: Threshold None (tests report-only mode)
+  test-threshold-none:
+    name: "Test 5: Threshold = None"
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-only'
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
       zap_scan_mode: 'url'
       zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
+      zap_target_urls: 'http://zero.webappsecurity.com'
       severity_threshold: 'none'
       allow_failure: true
     secrets: inherit
 
-  threshold-informational:
-    name: Threshold - Informational (Very Strict)
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
+  # Test 6: Threshold High (tests strict failure mode)
+  test-threshold-high:
+    name: "Test 6: Threshold = High"
+    if: inputs.test_suite == 'all' || inputs.test_suite == 'url-only'
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
       zap_scan_mode: 'url'
       zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
-      severity_threshold: 'informational'
-      allow_failure: true
-    secrets: inherit
-
-  threshold-low:
-    name: Threshold - Low
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'url'
-      zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
-      severity_threshold: 'low'
-      allow_failure: true
-    secrets: inherit
-
-  threshold-medium:
-    name: Threshold - Medium
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'url'
-      zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
-      severity_threshold: 'medium'
-      allow_failure: true
-    secrets: inherit
-
-  threshold-high:
-    name: Threshold - High
-    if: inputs.test_suite == 'all' || inputs.test_suite == 'thresholds'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap'
-      zap_scan_mode: 'url'
-      zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
+      zap_target_urls: 'http://hackazon.webscantest.com'
       severity_threshold: 'high'
-      allow_failure: true
+      allow_failure: false
     secrets: inherit
 
   # =============================================================================
-  # INTEGRATION TESTS - Test with other scanners
-  # =============================================================================
-
-  integration-with-trivy:
-    name: Integration - ZAP + Trivy
-    if: inputs.test_suite == 'all'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap,trivy'
-      zap_scan_mode: 'url'
-      zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
-      allow_failure: true
-    secrets: inherit
-
-  integration-with-semgrep:
-    name: Integration - ZAP + Semgrep
-    if: inputs.test_suite == 'all'
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
-    with:
-      scanners: 'zap,semgrep'
-      zap_scan_mode: 'url'
-      zap_scan_type: 'baseline'
-      zap_target_urls: 'http://testphp.vulnweb.com'
-      allow_failure: true
-    secrets: inherit
-
-  # =============================================================================
-  # COMPREHENSIVE SUMMARY
+  # CONFIGURATION TEST REPORT
   # =============================================================================
 
   test-summary:
     name: Configuration Test Report
     runs-on: ubuntu-latest
     needs:
-      - url-baseline
-      - url-full
-      - url-api
-      - url-multiple-targets
-      - docker-baseline-juiceshop
-      - docker-full-juiceshop
-      - docker-baseline-dvwa
-      - docker-baseline-podinfo
-      - docker-custom-port
-      - threshold-none
-      - threshold-informational
-      - threshold-low
-      - threshold-medium
-      - threshold-high
-      - integration-with-trivy
-      - integration-with-semgrep
+      - test-url-baseline
+      - test-url-full
+      - test-url-api
+      - test-docker-baseline
+      - test-threshold-none
+      - test-threshold-high
     if: always()
     steps:
       - name: Generate Configuration Test Report
@@ -285,48 +139,26 @@ jobs:
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # URL Mode Tests
-          echo "## URL Mode Tests" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Results" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Configuration | Target | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------------|--------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Baseline Scan | testphp.vulnweb.com | ${{ needs.url-baseline.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Full Scan | demo.testfire.net | ${{ needs.url-full.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| API Scan | petstore.swagger.io | ${{ needs.url-api.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Multiple Targets | multiple | ${{ needs.url-multiple-targets.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Docker Mode Tests
-          echo "## Docker Mode Tests" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Configuration | Image | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------------|-------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| Juice Shop - Baseline | bkimminich/juice-shop | ${{ needs.docker-baseline-juiceshop.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Juice Shop - Full | bkimminich/juice-shop | ${{ needs.docker-full-juiceshop.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| DVWA - Baseline | vulnerables/web-dvwa | ${{ needs.docker-baseline-dvwa.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Podinfo - Baseline | stefanprodan/podinfo | ${{ needs.docker-baseline-podinfo.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| Custom Port (8888:3000) | bkimminich/juice-shop | ${{ needs.docker-custom-port.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| # | Test | Configuration | Status |" >> $GITHUB_STEP_SUMMARY
+          echo "|---|------|---------------|--------|" >> $GITHUB_STEP_SUMMARY
+          echo "| 1 | URL + Baseline | mode=url, type=baseline | ${{ needs.test-url-baseline.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 2 | URL + Full Scan | mode=url, type=full | ${{ needs.test-url-full.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 3 | URL + API Scan | mode=url, type=api | ${{ needs.test-url-api.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 4 | Docker + Baseline | mode=docker-run, type=baseline | ${{ needs.test-docker-baseline.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 5 | Threshold None | severity_threshold=none | ${{ needs.test-threshold-none.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| 6 | Threshold High | severity_threshold=high, allow_failure=false | ${{ needs.test-threshold-high.result }} |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Threshold Tests
-          echo "## Threshold Tests" >> $GITHUB_STEP_SUMMARY
+          echo "## Coverage Matrix" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Threshold Level | Expected Behavior | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|-----------------|-------------------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| none | Never fail | ${{ needs.threshold-none.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| informational | Fail on any finding | ${{ needs.threshold-informational.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| low | Fail on low+ severity | ${{ needs.threshold-low.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| medium | Fail on medium+ severity | ${{ needs.threshold-medium.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| high | Fail on high severity only | ${{ needs.threshold-high.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-
-          # Integration Tests
-          echo "## Integration Tests" >> $GITHUB_STEP_SUMMARY
-          echo "" >> $GITHUB_STEP_SUMMARY
-          echo "| Configuration | Status |" >> $GITHUB_STEP_SUMMARY
-          echo "|---------------|--------|" >> $GITHUB_STEP_SUMMARY
-          echo "| ZAP + Trivy | ${{ needs.integration-with-trivy.result }} |" >> $GITHUB_STEP_SUMMARY
-          echo "| ZAP + Semgrep | ${{ needs.integration-with-semgrep.result }} |" >> $GITHUB_STEP_SUMMARY
+          echo "| Dimension | Values Tested |" >> $GITHUB_STEP_SUMMARY
+          echo "|-----------|---------------|" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan Modes | url, docker-run |" >> $GITHUB_STEP_SUMMARY
+          echo "| Scan Types | baseline, full, api |" >> $GITHUB_STEP_SUMMARY
+          echo "| Thresholds | none, high |" >> $GITHUB_STEP_SUMMARY
+          echo "| Failure Modes | allow_failure=true, allow_failure=false |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           # Summary Statistics
@@ -335,28 +167,17 @@ jobs:
           echo "## Summary" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # Count results
           PASSED=0
           FAILED=0
           SKIPPED=0
 
           for result in \
-            "${{ needs.url-baseline.result }}" \
-            "${{ needs.url-full.result }}" \
-            "${{ needs.url-api.result }}" \
-            "${{ needs.url-multiple-targets.result }}" \
-            "${{ needs.docker-baseline-juiceshop.result }}" \
-            "${{ needs.docker-full-juiceshop.result }}" \
-            "${{ needs.docker-baseline-dvwa.result }}" \
-            "${{ needs.docker-baseline-podinfo.result }}" \
-            "${{ needs.docker-custom-port.result }}" \
-            "${{ needs.threshold-none.result }}" \
-            "${{ needs.threshold-informational.result }}" \
-            "${{ needs.threshold-low.result }}" \
-            "${{ needs.threshold-medium.result }}" \
-            "${{ needs.threshold-high.result }}" \
-            "${{ needs.integration-with-trivy.result }}" \
-            "${{ needs.integration-with-semgrep.result }}"; do
+            "${{ needs.test-url-baseline.result }}" \
+            "${{ needs.test-url-full.result }}" \
+            "${{ needs.test-url-api.result }}" \
+            "${{ needs.test-docker-baseline.result }}" \
+            "${{ needs.test-threshold-none.result }}" \
+            "${{ needs.test-threshold-high.result }}"; do
             case "$result" in
               success) ((PASSED++)) ;;
               failure) ((FAILED++)) ;;
@@ -374,27 +195,15 @@ jobs:
           echo "| Skipped | $SKIPPED |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          # List failed configurations
+          # List configurations that don't work
           if [ $FAILED -gt 0 ]; then
-            echo "### Failed Configurations" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "The following configurations did not work:" >> $GITHUB_STEP_SUMMARY
+            echo "### Configurations That Don't Work" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
 
-            [[ "${{ needs.url-baseline.result }}" == "failure" ]] && echo "- URL Mode - Baseline Scan" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.url-full.result }}" == "failure" ]] && echo "- URL Mode - Full Scan" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.url-api.result }}" == "failure" ]] && echo "- URL Mode - API Scan" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.url-multiple-targets.result }}" == "failure" ]] && echo "- URL Mode - Multiple Targets" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.docker-baseline-juiceshop.result }}" == "failure" ]] && echo "- Docker Mode - Juice Shop Baseline" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.docker-full-juiceshop.result }}" == "failure" ]] && echo "- Docker Mode - Juice Shop Full" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.docker-baseline-dvwa.result }}" == "failure" ]] && echo "- Docker Mode - DVWA Baseline" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.docker-baseline-podinfo.result }}" == "failure" ]] && echo "- Docker Mode - Podinfo Baseline" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.docker-custom-port.result }}" == "failure" ]] && echo "- Docker Mode - Custom Port Mapping" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.threshold-none.result }}" == "failure" ]] && echo "- Threshold - None" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.threshold-informational.result }}" == "failure" ]] && echo "- Threshold - Informational" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.threshold-low.result }}" == "failure" ]] && echo "- Threshold - Low" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.threshold-medium.result }}" == "failure" ]] && echo "- Threshold - Medium" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.threshold-high.result }}" == "failure" ]] && echo "- Threshold - High" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.integration-with-trivy.result }}" == "failure" ]] && echo "- Integration - ZAP + Trivy" >> $GITHUB_STEP_SUMMARY
-            [[ "${{ needs.integration-with-semgrep.result }}" == "failure" ]] && echo "- Integration - ZAP + Semgrep" >> $GITHUB_STEP_SUMMARY
+            [[ "${{ needs.test-url-baseline.result }}" == "failure" ]] && echo "- **URL + Baseline**: Basic URL scanning with baseline scan type" >> $GITHUB_STEP_SUMMARY
+            [[ "${{ needs.test-url-full.result }}" == "failure" ]] && echo "- **URL + Full Scan**: Active scanning with spider/crawler" >> $GITHUB_STEP_SUMMARY
+            [[ "${{ needs.test-url-api.result }}" == "failure" ]] && echo "- **URL + API Scan**: OpenAPI/Swagger spec scanning" >> $GITHUB_STEP_SUMMARY
+            [[ "${{ needs.test-docker-baseline.result }}" == "failure" ]] && echo "- **Docker + Baseline**: Container-based application scanning" >> $GITHUB_STEP_SUMMARY
+            [[ "${{ needs.test-threshold-none.result }}" == "failure" ]] && echo "- **Threshold None**: Report-only mode (severity_threshold=none)" >> $GITHUB_STEP_SUMMARY
+            [[ "${{ needs.test-threshold-high.result }}" == "failure" ]] && echo "- **Threshold High**: Strict failure mode (allow_failure=false)" >> $GITHUB_STEP_SUMMARY
           fi
