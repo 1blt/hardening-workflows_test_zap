@@ -46,7 +46,7 @@ TARGET=testfire SCAN_TYPE=baseline ./code/local-test.sh
 
 ```bash
 # Start all services including ZAP UI
-docker-compose -f docker-compose.local.yml up -d
+docker-compose -f data/docker-compose.local.yml up -d
 
 # Access ZAP UI
 open http://localhost:8080/zap
@@ -59,7 +59,7 @@ open http://localhost:8080/zap
 # Run scans through ZAP UI or API
 
 # Stop everything
-docker-compose -f docker-compose.local.yml down
+docker-compose -f data/docker-compose.local.yml down
 ```
 
 ### Option 3: Manual Docker Commands
@@ -367,7 +367,7 @@ rm -rf local-reports/
 docker system prune -f
 
 # If using docker-compose
-docker-compose -f docker-compose.local.yml down -v
+docker-compose -f data/docker-compose.local.yml down -v
 ```
 
 ## Next Steps

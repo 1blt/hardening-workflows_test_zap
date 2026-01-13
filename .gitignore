@@ -5,10 +5,12 @@
 *.xml
 !README.md
 !docs/*.md
+!.claude/*.md
 
 # Test Results
 test-results/
 reports/
+local-reports/
 
 # OS Files
 .DS_Store

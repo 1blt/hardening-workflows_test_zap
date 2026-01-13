@@ -39,19 +39,19 @@ This repository uses **existing, well-maintained vulnerable containers** instead
 
 ```bash
 # Setup (first time only)
-make setup
+make -f code/Makefile setup
 
 # View all available commands
-make help
+make -f code/Makefile help
 
 # Local testing (quick debugging)
-make test-juiceshop
-make test-dvwa
-make test-podinfo
+make -f code/Makefile test-juiceshop
+make -f code/Makefile test-dvwa
+make -f code/Makefile test-podinfo
 
 # GitHub Actions (validates PR #101)
-make github-all
-make github-watch
+make -f code/Makefile github-all
+make -f code/Makefile github-watch
 ```
 
 ### Option 1: Local Testing (Fast, Debugging)
@@ -73,7 +73,7 @@ TARGET=dvwa SCAN_TYPE=full ./code/local-test.sh
 TARGET=podinfo ./code/local-test.sh
 
 # Interactive testing with ZAP UI
-docker-compose -f docker-compose.local.yml up -d
+docker-compose -f data/docker-compose.local.yml up -d
 open http://localhost:8080/zap
 ```
 

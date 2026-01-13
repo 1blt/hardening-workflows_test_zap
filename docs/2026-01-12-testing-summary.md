@@ -62,12 +62,12 @@ This repository contains a complete test suite for validating PR #101 (ZAP DAST 
    - Supports all test targets
    - Automated container management
 
-2. **docker-compose.local.yml** - Local test environment
+2. **data/docker-compose.local.yml** - Local test environment
    - ZAP UI + vulnerable apps
    - Interactive testing setup
    - Network isolated
 
-3. **Makefile** - Convenience commands
+3. **code/Makefile** - Convenience commands
    - Quick access to all operations
    - Local and GitHub testing
    - Cleanup and validation
@@ -115,26 +115,26 @@ Using **existing, maintained containers** (no custom code):
 
 ```bash
 # 1. Setup
-make setup
+make -f code/Makefile setup
 
 # 2. Local testing (quick)
-make test-juiceshop
+make -f code/Makefile test-juiceshop
 
 # 3. GitHub testing (official)
-make github-all
+make -f code/Makefile github-all
 
 # 4. Validate results
-make validate
+make -f code/Makefile validate
 ```
 
 ### For PR Review
 
 ```bash
 # Run all GitHub workflows
-make github-all
+make -f code/Makefile github-all
 
 # Watch progress
-make github-watch
+make -f code/Makefile github-watch
 
 # Download and validate
 gh run download <run-id>
@@ -276,27 +276,24 @@ PR #101 should be rejected if:
 ```
 .
 ├── README.md                                    # Main documentation
-├── data/test-checklist.csv                           # 72 test cases
-├── Makefile                                     # Convenience commands
-├── code/local-test.sh                                # Local testing script
-├── docker-compose.yml                           # Test app composition
-├── docker-compose.local.yml                     # Local test environment
-├── TESTING-SUMMARY.md                           # This file
 ├── .gitignore                                   # Git ignore patterns
+├── code/
+│   ├── local-test.sh                           # Local testing script
+│   ├── submit-upstream-report.sh               # Submit findings upstream
+│   └── validate-workflows.sh                   # Workflow validation
+├── data/
+│   ├── test-checklist.csv                      # 72 test cases
+│   ├── docker-compose.yml                      # Test app composition
+│   ├── docker-compose.local.yml                # Local test environment
+│   └── zap-configs/                            # ZAP configuration files
 ├── docs/
 │   ├── quick-start.md                          # 5-min setup guide
 │   ├── local-testing.md                        # Local testing guide
-│   └── pr-review-guide.md                      # PR review methodology
+│   ├── pr-review-guide.md                      # PR review methodology
+│   └── *.md                                    # Dated reports
 └── .github/
     ├── workflows/
-    │   ├── test-zap-docker-juiceshop.yml       # Juice Shop tests
-    │   ├── test-zap-docker-dvwa.yml            # DVWA tests
-    │   ├── test-zap-docker-podinfo.yml         # Podinfo tests
-    │   ├── test-zap-url-mode.yml               # URL mode tests
-    │   ├── test-zap-compose-mode.yml           # Compose mode tests
-    │   ├── test-zap-thresholds.yml             # Threshold tests
-    │   ├── test-zap-integration.yml            # Integration tests
-    │   └── run-all-tests.yml                   # Master workflow
+    │   └── run-all-tests.yml                   # Test workflow
     └── scripts/
         ├── validate-zap-results.sh             # Result validation
         ├── summarize-tests.sh                  # Test summary
@@ -344,15 +341,15 @@ PR #101 should be rejected if:
 
 2. **Run First Test**
    ```bash
-   make setup
-   make github-juiceshop
-   make github-watch
+   make -f code/Makefile setup
+   make -f code/Makefile github-juiceshop
+   make -f code/Makefile github-watch
    ```
 
 3. **Validate Results**
    ```bash
    gh run download <run-id>
-   make validate
+   make -f code/Makefile validate
    ```
 
 4. **Track Progress**
@@ -371,7 +368,7 @@ PR #101 should be rejected if:
 - **Local Testing:** `docs/local-testing.md`
 - **PR Review:** `docs/pr-review-guide.md`
 - **Test Checklist:** `data/test-checklist.csv`
-- **Help:** `make help`
+- **Help:** `make -f code/Makefile help`
 
 ## PR #101 Reference
 

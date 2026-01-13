@@ -112,7 +112,7 @@ summary:
 
 # Docker Compose targets
 compose-up:
-	docker-compose -f docker-compose.local.yml up -d
+	docker-compose -f data/docker-compose.local.yml up -d
 	@echo "✅ Services started:"
 	@echo "   ZAP UI: http://localhost:8080/zap"
 	@echo "   Juice Shop: http://localhost:3000"
@@ -120,10 +120,10 @@ compose-up:
 	@echo "   Podinfo: http://localhost:9898"
 
 compose-down:
-	docker-compose -f docker-compose.local.yml down
+	docker-compose -f data/docker-compose.local.yml down
 
 compose-logs:
-	docker-compose -f docker-compose.local.yml logs -f
+	docker-compose -f data/docker-compose.local.yml logs -f
 
 # Cleanup targets
 clean:
@@ -135,7 +135,7 @@ clean:
 clean-all:
 	@echo "Deep cleaning..."
 	rm -rf local-reports/
-	docker-compose -f docker-compose.local.yml down -v
+	docker-compose -f data/docker-compose.local.yml down -v
 	docker system prune -f
 	@echo "✅ Deep cleanup complete"
 

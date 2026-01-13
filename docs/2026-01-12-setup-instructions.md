@@ -79,8 +79,8 @@ gh run watch
 
 Or use the Makefile:
 ```bash
-make github-juiceshop
-make github-watch
+make -f code/Makefile github-juiceshop
+make -f code/Makefile github-watch
 ```
 
 ### Step 5: Verify It's Actually Running
