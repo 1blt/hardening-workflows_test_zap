@@ -34,7 +34,7 @@ jobs:
     uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
     with:
       scanners: 'zap'
-      zap_config: ${{ github.workspace }}/data/zap-configs/${{ inputs.config }}-test.yml
+      zap_config_file: data/zap-configs/${{ inputs.config }}-test.yml
       allow_failure: true
     secrets: inherit
 
