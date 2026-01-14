@@ -8,8 +8,9 @@ on:
         required: true
         type: choice
         options:
-          - minimal       # 3 scans, target-friendly
-          - comprehensive # 6 scans, full coverage
+          - minimal       # 2 URL scans (baseline + threshold)
+          - docker        # 1 Docker scan (podinfo)
+          - comprehensive # 5 URL scans (full coverage)
         default: 'minimal'
 
 permissions:
@@ -24,18 +25,15 @@ jobs:
   # =============================================================================
   # CONFIG-BASED ZAP TESTING
   # =============================================================================
-  # Uses scan_groups defined in config files:
-  # - minimal: 3 scans (url-baseline, threshold-test, docker-baseline)
-  # - comprehensive: 6 scans (matches PR example)
+  # Uses scanner-zap-from-config.yml for config-driven scans
+  # Config files define target mode and list of scans
   # =============================================================================
 
   zap-scan:
     name: "ZAP Scan (${{ inputs.config }})"
-    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@feat/zap-scanner
+    uses: huntridge-labs/hardening-workflows/.github/workflows/scanner-zap-from-config.yml@feat/zap-scanner
     with:
-      scanners: 'zap'
-      zap_config_file: data/zap-configs/${{ inputs.config }}-test.yml
-      allow_failure: true
+      config_file: data/zap-configs/${{ inputs.config }}-test.yml
     secrets: inherit
 
   # =============================================================================
@@ -68,7 +66,7 @@ jobs:
           echo "# $ICON DETERMINATION: $DECISION" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "**Config:** \`data/zap-configs/${CONFIG}-test.yml\`" >> $GITHUB_STEP_SUMMARY
-          echo "**Workflow:** \`huntridge-labs/hardening-workflows@feat/zap-scanner\`" >> $GITHUB_STEP_SUMMARY
+          echo "**Workflow:** \`scanner-zap-from-config.yml@feat/zap-scanner\`" >> $GITHUB_STEP_SUMMARY
           echo "**Date:** $(date -u '+%Y-%m-%d %H:%M UTC')" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "---" >> $GITHUB_STEP_SUMMARY
@@ -78,13 +76,13 @@ jobs:
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "| Metric | Value |" >> $GITHUB_STEP_SUMMARY
           echo "|--------|-------|" >> $GITHUB_STEP_SUMMARY
-          echo "| ZAP Scan Job | $ICON $SCAN_RESULT |" >> $GITHUB_STEP_SUMMARY
+          echo "| ZAP Config Scan | $ICON $SCAN_RESULT |" >> $GITHUB_STEP_SUMMARY
           echo "| Config Mode | $CONFIG |" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Config File Contents" >> $GITHUB_STEP_SUMMARY
+          echo "## Config File" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
           echo "\`\`\`yaml" >> $GITHUB_STEP_SUMMARY
           cat "data/zap-configs/${CONFIG}-test.yml" >> $GITHUB_STEP_SUMMARY
@@ -96,35 +94,46 @@ jobs:
             echo "" >> $GITHUB_STEP_SUMMARY
             echo "## Troubleshooting" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
-            echo "1. **Check ZAP job logs** for scan execution errors" >> $GITHUB_STEP_SUMMARY
-            echo "2. **Check annotations** for artifact conflicts" >> $GITHUB_STEP_SUMMARY
-            echo "3. **Verify config syntax** matches the schema" >> $GITHUB_STEP_SUMMARY
+            echo "1. Check **Parse ZAP Config** job for config syntax errors" >> $GITHUB_STEP_SUMMARY
+            echo "2. Check individual scan jobs for ZAP execution errors" >> $GITHUB_STEP_SUMMARY
+            echo "3. Check **Annotations** tab for artifact conflicts" >> $GITHUB_STEP_SUMMARY
+            echo "4. Verify target URLs are accessible" >> $GITHUB_STEP_SUMMARY
             echo "" >> $GITHUB_STEP_SUMMARY
           fi
 
           echo "---" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
-          echo "## Coverage ($CONFIG mode)" >> $GITHUB_STEP_SUMMARY
+          echo "## Test Coverage" >> $GITHUB_STEP_SUMMARY
           echo "" >> $GITHUB_STEP_SUMMARY
 
-          if [ "$CONFIG" = "minimal" ]; then
-            echo "| Feature | Tested |" >> $GITHUB_STEP_SUMMARY
-            echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
-            echo "| URL scan mode | url-baseline, threshold-test |" >> $GITHUB_STEP_SUMMARY
-            echo "| Docker scan mode | docker-baseline |" >> $GITHUB_STEP_SUMMARY
-            echo "| Baseline scan type | All scans |" >> $GITHUB_STEP_SUMMARY
-            echo "| Threshold: none | url-baseline, docker-baseline |" >> $GITHUB_STEP_SUMMARY
-            echo "| Threshold: high | threshold-test |" >> $GITHUB_STEP_SUMMARY
-            echo "" >> $GITHUB_STEP_SUMMARY
-            echo "> **Note:** Minimal config uses only demo.testfire.net + podinfo to minimize external load." >> $GITHUB_STEP_SUMMARY
-          else
-            echo "| Feature | Tested |" >> $GITHUB_STEP_SUMMARY
-            echo "|---------|--------|" >> $GITHUB_STEP_SUMMARY
-            echo "| URL scan mode | url-baseline, url-full, url-api, threshold-* |" >> $GITHUB_STEP_SUMMARY
-            echo "| Docker scan mode | docker-baseline |" >> $GITHUB_STEP_SUMMARY
-            echo "| Baseline scan | url-baseline, threshold-*, docker-baseline |" >> $GITHUB_STEP_SUMMARY
-            echo "| Full scan | url-full |" >> $GITHUB_STEP_SUMMARY
-            echo "| API scan | url-api |" >> $GITHUB_STEP_SUMMARY
-            echo "| Threshold: none | url-baseline, threshold-none |" >> $GITHUB_STEP_SUMMARY
-            echo "| Threshold: high | threshold-high |" >> $GITHUB_STEP_SUMMARY
-          fi
+          case "$CONFIG" in
+            minimal)
+              echo "| Feature | Scans |" >> $GITHUB_STEP_SUMMARY
+              echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| URL mode | url-baseline, threshold-test |" >> $GITHUB_STEP_SUMMARY
+              echo "| Baseline scan | Both scans |" >> $GITHUB_STEP_SUMMARY
+              echo "| Threshold: none | url-baseline |" >> $GITHUB_STEP_SUMMARY
+              echo "| Threshold: high | threshold-test |" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "> Uses only demo.testfire.net to minimize external load" >> $GITHUB_STEP_SUMMARY
+              ;;
+            docker)
+              echo "| Feature | Scans |" >> $GITHUB_STEP_SUMMARY
+              echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| Docker mode | docker-baseline |" >> $GITHUB_STEP_SUMMARY
+              echo "| Baseline scan | docker-baseline |" >> $GITHUB_STEP_SUMMARY
+              echo "| Container | podinfo:latest |" >> $GITHUB_STEP_SUMMARY
+              echo "" >> $GITHUB_STEP_SUMMARY
+              echo "> Self-contained test - no external target load" >> $GITHUB_STEP_SUMMARY
+              ;;
+            comprehensive)
+              echo "| Feature | Scans |" >> $GITHUB_STEP_SUMMARY
+              echo "|---------|-------|" >> $GITHUB_STEP_SUMMARY
+              echo "| URL mode | All 5 scans |" >> $GITHUB_STEP_SUMMARY
+              echo "| Baseline scan | url-baseline, threshold-* |" >> $GITHUB_STEP_SUMMARY
+              echo "| Full scan | url-full |" >> $GITHUB_STEP_SUMMARY
+              echo "| API scan | url-api |" >> $GITHUB_STEP_SUMMARY
+              echo "| Threshold: none | url-baseline, threshold-none |" >> $GITHUB_STEP_SUMMARY
+              echo "| Threshold: high | threshold-high |" >> $GITHUB_STEP_SUMMARY
+              ;;
+          esac
