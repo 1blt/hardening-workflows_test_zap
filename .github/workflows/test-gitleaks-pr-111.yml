@@ -17,9 +17,60 @@ permissions:
 
 jobs:
   gitleaks-scan:
-    name: "Gitleaks (PR Comment Test)"
+    name: "Gitleaks Scan"
     uses: huntridge-labs/hardening-workflows/.github/workflows/scanner-gitleaks.yml@fix/gitleaks-PR-comment
     with:
       post_pr_comment: true
-      fail_on_severity: low
+      fail_on_severity: none  # Don't fail so we can verify the comment
     secrets: inherit
+
+  verify-pr-comment:
+    name: "Verify PR Comment Created"
+    runs-on: ubuntu-latest
+    needs: gitleaks-scan
+    if: always()
+    steps:
+      - name: Check for Gitleaks PR Comment
+        id: check-comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking for gitleaks PR comment on PR #${{ github.event.pull_request.number }}..."
+
+          # Get PR comments and look for gitleaks comment
+          COMMENT_ID=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            --jq '.[] | select(.body | contains("Gitleaks") or contains("gitleaks") or contains("Secret") or contains("secret")) | .id' | head -1)
+
+          if [ -n "$COMMENT_ID" ]; then
+            echo "SUCCESS: Found gitleaks PR comment (ID: $COMMENT_ID)"
+            echo "comment_id=$COMMENT_ID" >> $GITHUB_OUTPUT
+            echo "comment_found=true" >> $GITHUB_OUTPUT
+          else
+            echo "FAILURE: No gitleaks PR comment found"
+            echo "comment_found=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Delete PR Comment (Cleanup)
+        if: steps.check-comment.outputs.comment_found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cleaning up: deleting PR comment ${{ steps.check-comment.outputs.comment_id }}"
+          gh api -X DELETE repos/${{ github.repository }}/issues/comments/${{ steps.check-comment.outputs.comment_id }}
+          echo "PR comment deleted successfully"
+
+      - name: Report Result
+        if: always()
+        run: |
+          echo "# Gitleaks PR #111 Test Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+          if [ "${{ steps.check-comment.outputs.comment_found }}" == "true" ]; then
+            echo "## ✅ PASS: PR comment was created" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The fix works - gitleaks now posts PR comments even when secrets are detected." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## ❌ FAIL: PR comment was NOT created" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The bug still exists - PR comment is missing when secrets are found." >> $GITHUB_STEP_SUMMARY
+          fi
