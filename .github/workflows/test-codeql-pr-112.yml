@@ -1,0 +1,121 @@
+name: Test CodeQL PR #112 Fix
+
+# This tests the fix for: CodeQL summary showing "Skipped" instead of actual results
+# The bug: Summary job looked for sarif/ but artifacts are under codeql-reports/sarif/
+# The fix: Correct directory paths so summary displays actual scan results
+
+on:
+  pull_request:
+    branches:
+      - main
+
+permissions:
+  contents: read
+  security-events: write
+  actions: read
+  pull-requests: write
+  checks: write
+  id-token: write
+
+jobs:
+  security-scan:
+    name: "Security Hardening (CodeQL Only)"
+    uses: huntridge-labs/hardening-workflows/.github/workflows/reusable-security-hardening.yml@fix/codeql-pr-comment
+    with:
+      scanners: 'codeql'
+      post_pr_comment: true
+      allow_failure: true
+      enable_code_security: false
+    secrets: inherit
+
+  verify-codeql-summary:
+    name: "Verify CodeQL Summary Not Skipped"
+    runs-on: ubuntu-latest
+    needs: security-scan
+    if: always()
+    steps:
+      - name: Wait for comment to be posted
+        run: sleep 10
+
+      - name: Check for Security Hardening PR Comment
+        id: check-comment
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Checking for security hardening PR comment on PR #${{ github.event.pull_request.number }}..."
+
+          # Get the comment body
+          COMMENT=$(gh api repos/${{ github.repository }}/issues/${{ github.event.pull_request.number }}/comments \
+            --jq '.[] | select(.body | contains("security-hardening-comment-marker")) | {id: .id, body: .body}' | head -1)
+
+          COMMENT_ID=$(echo "$COMMENT" | jq -r '.id // empty')
+
+          if [ -n "$COMMENT_ID" ]; then
+            echo "Found security hardening PR comment (ID: $COMMENT_ID)"
+            echo "comment_id=$COMMENT_ID" >> $GITHUB_OUTPUT
+            echo "comment_found=true" >> $GITHUB_OUTPUT
+
+            # Check if CodeQL shows "Skipped" (the bug) or actual results (the fix)
+            COMMENT_BODY=$(gh api repos/${{ github.repository }}/issues/comments/$COMMENT_ID --jq '.body')
+
+            echo "--- Comment body preview ---"
+            echo "$COMMENT_BODY" | head -100
+            echo "----------------------------"
+
+            # Check for CodeQL section
+            if echo "$COMMENT_BODY" | grep -qi "CodeQL"; then
+              echo "CodeQL section found in comment"
+
+              # Check if it shows "Skipped" status (the bug)
+              if echo "$COMMENT_BODY" | grep -A5 -i "CodeQL" | grep -qi "Skipped"; then
+                echo "FAILURE: CodeQL shows 'Skipped' - bug not fixed!"
+                echo "codeql_status=skipped" >> $GITHUB_OUTPUT
+              else
+                echo "SUCCESS: CodeQL does not show 'Skipped' - fix working!"
+                echo "codeql_status=not_skipped" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "WARNING: No CodeQL section found in comment"
+              echo "codeql_status=not_found" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "FAILURE: No security hardening PR comment found"
+            echo "comment_found=false" >> $GITHUB_OUTPUT
+            exit 1
+          fi
+
+      - name: Delete PR Comment (Cleanup)
+        if: steps.check-comment.outputs.comment_found == 'true'
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          echo "Cleaning up: deleting PR comment ${{ steps.check-comment.outputs.comment_id }}"
+          gh api -X DELETE repos/${{ github.repository }}/issues/comments/${{ steps.check-comment.outputs.comment_id }}
+          echo "PR comment deleted successfully"
+
+      - name: Report Result
+        if: always()
+        run: |
+          echo "# CodeQL PR #112 Test Result" >> $GITHUB_STEP_SUMMARY
+          echo "" >> $GITHUB_STEP_SUMMARY
+
+          COMMENT_FOUND="${{ steps.check-comment.outputs.comment_found }}"
+          CODEQL_STATUS="${{ steps.check-comment.outputs.codeql_status }}"
+
+          if [ "$COMMENT_FOUND" != "true" ]; then
+            echo "## FAIL: PR comment was NOT created" >> $GITHUB_STEP_SUMMARY
+            exit 1
+          elif [ "$CODEQL_STATUS" == "skipped" ]; then
+            echo "## FAIL: CodeQL summary shows 'Skipped'" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The bug still exists - CodeQL results not displayed correctly." >> $GITHUB_STEP_SUMMARY
+            exit 1
+          elif [ "$CODEQL_STATUS" == "not_skipped" ]; then
+            echo "## PASS: CodeQL summary shows actual results" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "The fix works - CodeQL summary displays scan results instead of 'Skipped'." >> $GITHUB_STEP_SUMMARY
+          else
+            echo "## INCONCLUSIVE: CodeQL section not found" >> $GITHUB_STEP_SUMMARY
+            echo "" >> $GITHUB_STEP_SUMMARY
+            echo "Could not verify - CodeQL section missing from comment." >> $GITHUB_STEP_SUMMARY
+          fi
