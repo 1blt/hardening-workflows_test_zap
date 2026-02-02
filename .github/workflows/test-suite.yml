@@ -29,11 +29,13 @@ concurrency:
   cancel-in-progress: true
 
 permissions:
-  contents: write
+  contents: read
   security-events: write
   actions: read
   packages: read
   pull-requests: write
+  pages: write
+  id-token: write
 
 # ============================================================================
 # Orchestrator: calls sub-workflows based on scope selection.
@@ -167,6 +169,9 @@ jobs:
       - i1-infrastructure-scan
       - i2-no-hardcoded-urls
     if: always()
+    environment:
+      name: github-pages
+      url: ${{ steps.deploy.outputs.page_url }}
     steps:
       - name: Generate consolidated summary
         env:
@@ -398,21 +403,15 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Checkout gh-pages branch
+      - name: Fetch previous history.json
         run: |
-          # Clone just the gh-pages branch into a subdirectory (or create empty)
-          if git ls-remote --exit-code --heads origin gh-pages >/dev/null 2>&1; then
-            git worktree add gh-pages-dir origin/gh-pages
-          else
-            git worktree add --detach gh-pages-dir
-            cd gh-pages-dir
-            git checkout --orphan gh-pages
-            git rm -rf . 2>/dev/null || true
-            echo '[]' > history.json
-            git add history.json
-            git commit -m "init gh-pages" --allow-empty
-            cd ..
-          fi
+          mkdir -p _site
+          # Try to fetch history.json from the GitHub API (gh-pages branch or pages artifact)
+          PAGES_URL="https://${{ github.repository_owner }}.github.io/$(echo '${{ github.repository }}' | cut -d/ -f2)/history.json"
+          curl -sSf "$PAGES_URL" -o _site/history.json 2>/dev/null || echo '[]' > _site/history.json
+          # Validate JSON
+          jq empty _site/history.json 2>/dev/null || echo '[]' > _site/history.json
+          echo "History entries loaded: $(jq 'length' _site/history.json)"
 
       - name: Generate dashboard
         env:
@@ -434,18 +433,20 @@ jobs:
           RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
           RUN_ID: ${{ github.run_id }}
           REPO: ${{ github.repository }}
-          PAGES_DIR: gh-pages-dir
+          PAGES_DIR: _site
         run: bash .github/scripts/generate-dashboard.sh
 
-      - name: Deploy to GitHub Pages
-        uses: peaceiris/actions-gh-pages@v4
-        if: always()
+      - name: Setup Pages
+        uses: actions/configure-pages@v5
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
         with:
-          github_token: ${{ secrets.GITHUB_TOKEN }}
-          publish_dir: ./gh-pages-dir
-          publish_branch: gh-pages
-          force_orphan: false
-          keep_files: false
+          path: _site
+
+      - name: Deploy to GitHub Pages
+        id: deploy
+        uses: actions/deploy-pages@v4
 
       - name: Fail job if suite failed
         if: steps.verdict.outputs.suite_failed == 'true'
