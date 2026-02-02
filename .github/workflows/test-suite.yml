@@ -47,7 +47,7 @@ jobs:
   # ==========================================================================
   unit-tests:
     name: "Unit Tests"
-    if: inputs.scope == 'all' || inputs.scope == 'unit' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'unit' || github.event_name == 'schedule' || github.event_name == 'push'
     uses: ./.github/workflows/test-unit.yml
 
   # ==========================================================================
@@ -55,7 +55,7 @@ jobs:
   # ==========================================================================
   action-tests:
     name: "Direct Action Tests"
-    if: inputs.scope == 'all' || inputs.scope == 'actions' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'actions' || github.event_name == 'schedule' || github.event_name == 'push'
     uses: ./.github/workflows/test-actions-direct.yml
 
   # ==========================================================================
@@ -63,7 +63,7 @@ jobs:
   # ==========================================================================
   remote-tests:
     name: "Remote Mode Tests"
-    if: inputs.scope == 'all' || inputs.scope == 'remote' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'remote' || github.event_name == 'schedule' || github.event_name == 'push'
     uses: ./.github/workflows/test-remote.yml
 
   # ==========================================================================
@@ -71,7 +71,7 @@ jobs:
   # ==========================================================================
   discover-tests:
     name: "Discover Mode Tests"
-    if: inputs.scope == 'all' || inputs.scope == 'discover' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'discover' || github.event_name == 'schedule' || github.event_name == 'push'
     uses: ./.github/workflows/test-discover.yml
 
   # ==========================================================================
@@ -79,7 +79,7 @@ jobs:
   # ==========================================================================
   combination-tests:
     name: "Combination Tests"
-    if: inputs.scope == 'all' || inputs.scope == 'combination' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'combination' || github.event_name == 'schedule' || github.event_name == 'push'
     uses: ./.github/workflows/test-combination.yml
 
   # ==========================================================================
@@ -87,7 +87,7 @@ jobs:
   # ==========================================================================
   i1-infrastructure-scan:
     name: "I1: infrastructure-scan regression"
-    if: inputs.scope == 'all' || inputs.scope == 'regression' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'regression' || github.event_name == 'schedule' || github.event_name == 'push'
     uses: huntridge-labs/hardening-workflows/.github/workflows/infrastructure-scan.yml@feat/migrate-to-composite-actions
     with:
       fail_on_severity: none
@@ -97,7 +97,7 @@ jobs:
   # ==========================================================================
   i2-no-hardcoded-urls:
     name: "I2: no hardcoded URLs"
-    if: inputs.scope == 'all' || inputs.scope == 'regression' || github.event_name == 'schedule'
+    if: inputs.scope == 'all' || inputs.scope == 'regression' || github.event_name == 'schedule' || github.event_name == 'push'
     runs-on: ubuntu-latest
     timeout-minutes: 5
     steps:
