@@ -3,6 +3,9 @@ name: "SCN Detector Tests"
 on:
   workflow_dispatch:
 
+  push:
+    branches: [test/argus-scn]
+
   workflow_call:
     outputs:
       results:
