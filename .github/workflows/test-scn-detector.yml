@@ -61,7 +61,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -117,7 +117,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -183,7 +183,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -240,7 +240,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -304,7 +304,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -372,7 +372,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -444,7 +444,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -506,7 +506,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -563,7 +563,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -634,7 +634,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -693,7 +693,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -741,7 +741,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -801,7 +801,7 @@ jobs:
 
       - name: Run SCN detector (expect failure)
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -855,7 +855,7 @@ jobs:
 
       - name: Run SCN detector (expect failure)
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         continue-on-error: true
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
@@ -925,7 +925,7 @@ jobs:
 
       - name: Run SCN detector
         id: scn
-        uses: huntridge-labs/argus/.github/actions/scn-detector@profile-abstraction
+        uses: huntridge-labs/argus/.github/actions/scn-detector@sully/mcn-prototype
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
